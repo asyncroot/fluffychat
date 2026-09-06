@@ -211,8 +211,8 @@ class ChatDetailsView extends StatelessWidget {
                                 onPressed: () => context.push(
                                   '/rooms/${room.id}/details/emotes',
                                 ),
-                                label: L10n.of(context).stickers,
-                                icon: Icons.emoji_emotions_outlined,
+                                label: 'Media',
+                                icon: Icons.perm_media_outlined,
                               ),
                               if (room.pushRuleState == PushRuleState.notify)
                                 _MainChatDetailsButton(

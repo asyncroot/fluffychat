@@ -66,7 +66,6 @@ class ChatListItem extends StatelessWidget {
     final needLastEventSender =
         lastEvent != null &&
         room.getState(EventTypes.RoomMember, lastEvent.senderId) == null;
-    final space = this.space;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -85,100 +84,18 @@ class ChatListItem extends StatelessWidget {
                 builder: (context, hovered) => AnimatedScale(
                   duration: FluffyThemes.animationDuration,
                   curve: FluffyThemes.animationCurve,
-                  scale: hovered ? 1.1 : 1.0,
+                  scale: hovered ? 1.05 : 1.0,
                   child: SizedBox(
                     width: Avatar.defaultSize,
                     height: Avatar.defaultSize,
-                    child: Stack(
-                      children: [
-                        if (space != null)
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Avatar(
-                              shapeBorder: RoundedSuperellipseBorder(
-                                side: BorderSide(
-                                  width: 2,
-                                  color:
-                                      backgroundColor ??
-                                      theme.colorScheme.surface,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  AppConfig.spaceBorderRadius * 0.75,
-                                ),
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                AppConfig.spaceBorderRadius * 0.75,
-                              ),
-                              mxContent: space.avatar,
-                              size: Avatar.defaultSize * 0.75,
-                              name: space.getLocalizedDisplayname(),
-                              onTap: () => onLongPress?.call(context),
-                            ),
-                          ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Avatar(
-                            shapeBorder: space == null
-                                ? room.isSpace
-                                      ? RoundedSuperellipseBorder(
-                                          side: BorderSide(
-                                            width: 1,
-                                            color: theme.dividerColor,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            AppConfig.spaceBorderRadius,
-                                          ),
-                                        )
-                                      : null
-                                : RoundedRectangleBorder(
-                                    side: BorderSide(
-                                      width: 2,
-                                      color:
-                                          backgroundColor ??
-                                          theme.colorScheme.surface,
-                                    ),
-                                    borderRadius: BorderRadius.circular(
-                                      Avatar.defaultSize,
-                                    ),
-                                  ),
-                            borderRadius: room.isSpace
-                                ? BorderRadius.circular(
-                                    AppConfig.spaceBorderRadius,
-                                  )
-                                : null,
-                            mxContent: room.avatar,
-                            size: space != null
-                                ? Avatar.defaultSize * 0.75
-                                : Avatar.defaultSize,
-                            name: displayname,
-                            presenceUserId: directChatMatrixId,
-                            presenceBackgroundColor: backgroundColor,
-                            onTap: () => onLongPress?.call(context),
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: () => onLongPress?.call(context),
-                            child: AnimatedScale(
-                              duration: FluffyThemes.animationDuration,
-                              curve: FluffyThemes.animationCurve,
-                              scale: listTileHovered ? 1.0 : 0.0,
-                              child: Material(
-                                color: backgroundColor,
-                                borderRadius: BorderRadius.circular(16),
-                                child: const Icon(
-                                  Icons.arrow_drop_down_circle_outlined,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Avatar(
+                      borderRadius: BorderRadius.circular(Avatar.defaultSize / 2),
+                      mxContent: room.avatar,
+                      size: Avatar.defaultSize,
+                      name: displayname,
+                      presenceUserId: directChatMatrixId,
+                      presenceBackgroundColor: backgroundColor,
+                      onTap: () => onLongPress?.call(context),
                     ),
                   ),
                 ),
@@ -302,16 +219,10 @@ class ChatListItem extends StatelessWidget {
                         : const SizedBox.shrink(),
                   ),
                   Expanded(
-                    child: room.isSpace && room.membership == Membership.join
-                        ? Text(
-                            L10n.of(
-                              context,
-                            ).countChats(room.spaceChildren.length),
-                          )
-                        : typingText.isNotEmpty
+                    child: typingText.isNotEmpty
                         ? Text(
                             typingText,
-                            style: TextStyle(color: theme.colorScheme.primary),
+                            style: TextStyle(color: theme.colorScheme.secondary),
                             maxLines: 1,
                             softWrap: false,
                           )
@@ -343,31 +254,42 @@ class ChatListItem extends StatelessWidget {
                                   directChatMatrixId !=
                                       room.lastEvent?.senderId),
                             ),
-                            builder: (context, snapshot) => Text(
-                              room.membership == Membership.invite
-                                  ? room
-                                            .getState(
-                                              EventTypes.RoomMember,
-                                              room.client.userID!,
-                                            )
-                                            ?.content
-                                            .tryGet<String>('reason') ??
-                                        (isDirectChat
+                            builder: (context, snapshot) => Row(
+                              children: [
+                                if (ownMessage && !room.isSpace && room.membership != Membership.invite) ...[
+                                  Icon(
+                                    lastEvent?.status.isSending == true
+                                        ? Icons.access_time
+                                        : Icons.done_all,
+                                    size: 16,
+                                    color: lastEvent?.status.isSending == true
+                                        ? theme.colorScheme.outline
+                                        : const Color(0xFF53BDEB),
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
+                                Expanded(
+                                  child: Text(
+                                    room.membership == Membership.invite
+                                        ? (isDirectChat
                                             ? L10n.of(context).newChatRequest
                                             : L10n.of(context).inviteGroupChat)
-                                  : snapshot.data?.trim().replaceAll(
-                                          '\n',
-                                          ' ',
-                                        ) ??
-                                        L10n.of(context).noMessagesYet,
-                              softWrap: false,
-                              maxLines: room.notificationCount >= 1 ? 2 : 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                decoration: room.lastEvent?.redacted == true
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                              ),
+                                        : snapshot.data?.trim().replaceAll(
+                                                '\n',
+                                                ' ',
+                                              ) ??
+                                              L10n.of(context).noMessagesYet,
+                                    softWrap: false,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      decoration: room.lastEvent?.redacted == true
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                   ),

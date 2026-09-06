@@ -375,17 +375,6 @@ class ChatView extends StatelessWidget {
                           child: SizeChangedLayoutNotifier(
                             child: Container(
                               key: controller.inputBarKey,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    theme.colorScheme.surface.withAlpha(0),
-                                    theme.colorScheme.surface,
-                                    theme.colorScheme.surface,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
                               alignment: Alignment.center,
                               child: Container(
                                 margin: EdgeInsets.all(bottomSheetPadding),
@@ -403,61 +392,40 @@ class ChatView extends StatelessWidget {
                                     : controller.room.canSendDefaultMessages &&
                                           controller.room.membership ==
                                               Membership.join
-                                    ? Material(
-                                        clipBehavior: Clip.hardEdge,
-                                        color:
-                                            controller.selectedEvents.isNotEmpty
-                                            ? theme
-                                                  .colorScheme
-                                                  .tertiaryContainer
-                                            : theme
-                                                  .colorScheme
-                                                  .surfaceContainer,
-                                        borderRadius: BorderRadius.circular(32),
-                                        child:
-                                            controller.room.isAbandonedDMRoom ==
-                                                true
-                                            ? Row(
-                                                mainAxisAlignment: .spaceEvenly,
-                                                children: [
-                                                  TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                            16,
-                                                          ),
-                                                      foregroundColor: theme
-                                                          .colorScheme
-                                                          .error,
+                                    ? controller.selectedEvents.isNotEmpty
+                                        ? Material(
+                                            clipBehavior: Clip.hardEdge,
+                                            color: theme.colorScheme.tertiaryContainer,
+                                            borderRadius: BorderRadius.circular(32),
+                                            child: ChatInputRow(controller),
+                                          )
+                                        : controller.room.isAbandonedDMRoom == true
+                                            ? Material(
+                                                clipBehavior: Clip.hardEdge,
+                                                color: theme.colorScheme.surfaceContainer,
+                                                borderRadius: BorderRadius.circular(32),
+                                                child: Row(
+                                                  mainAxisAlignment: .spaceEvenly,
+                                                  children: [
+                                                    TextButton.icon(
+                                                      style: TextButton.styleFrom(
+                                                        padding: const EdgeInsets.all(16),
+                                                        foregroundColor: theme.colorScheme.error,
+                                                      ),
+                                                      icon: const Icon(Icons.archive_outlined),
+                                                      onPressed: controller.leaveChat,
+                                                      label: Text(L10n.of(context).leave),
                                                     ),
-                                                    icon: const Icon(
-                                                      Icons.archive_outlined,
+                                                    TextButton.icon(
+                                                      style: TextButton.styleFrom(
+                                                        padding: const EdgeInsets.all(16),
+                                                      ),
+                                                      icon: const Icon(Icons.forum_outlined),
+                                                      onPressed: controller.recreateChat,
+                                                      label: Text(L10n.of(context).reopenChat),
                                                     ),
-                                                    onPressed:
-                                                        controller.leaveChat,
-                                                    label: Text(
-                                                      L10n.of(context).leave,
-                                                    ),
-                                                  ),
-                                                  TextButton.icon(
-                                                    style: TextButton.styleFrom(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                            16,
-                                                          ),
-                                                    ),
-                                                    icon: const Icon(
-                                                      Icons.forum_outlined,
-                                                    ),
-                                                    onPressed:
-                                                        controller.recreateChat,
-                                                    label: Text(
-                                                      L10n.of(
-                                                        context,
-                                                      ).reopenChat,
-                                                    ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               )
                                             : Column(
                                                 mainAxisSize: .min,
@@ -466,9 +434,8 @@ class ChatView extends StatelessWidget {
                                                   ChatInputRow(controller),
                                                   ChatEmojiPicker(controller),
                                                 ],
-                                              ),
-                                      )
-                                    : SizedBox.shrink(),
+                                              )
+                                    : const SizedBox.shrink(),
                               ),
                             ),
                           ),

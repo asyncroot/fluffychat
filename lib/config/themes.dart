@@ -4,12 +4,22 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import 'package:fluffychat/config/app_config.dart';
-import 'package:fluffychat/config/setting_keys.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 abstract class FluffyThemes {
   static const double columnWidth = 380.0;
+
+  // WhatsApp Color Palette Constants
+  static const Color whatsappPrimaryGreen = Color(0xFF008069);
+  static const Color whatsappSecondaryGreen = Color(0xFF00A884);
+  static const Color whatsappDarkBackground = Color(0xFF121B22);
+  static const Color whatsappDarkSurface = Color(0xFF1F2C34);
+  static const Color whatsappLightBackground = Color(0xFFEFEAE2);
+  static const Color whatsappOutgoingLight = Color(0xFFD9FDD3);
+  static const Color whatsappIncomingLight = Color(0xFFFFFFFF);
+  static const Color whatsappOutgoingDark = Color(0xFF005C4B);
+  static const Color whatsappIncomingDark = Color(0xFF202C33);
 
   static const double maxTimelineWidth = columnWidth * 2;
 
@@ -47,17 +57,25 @@ abstract class FluffyThemes {
   ]) {
     final colorScheme = ColorScheme.fromSeed(
       brightness: brightness,
-      seedColor: seed ?? Color(AppSettings.colorSchemeSeedInt.value),
-      dynamicSchemeVariant: DynamicSchemeVariant.rainbow,
+      seedColor: seed ?? whatsappPrimaryGreen,
+      dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+      primary: whatsappPrimaryGreen,
+      secondary: whatsappSecondaryGreen,
+      surface: brightness == Brightness.dark
+          ? whatsappDarkSurface
+          : Colors.white,
     );
     final isColumnMode = FluffyThemes.isColumnMode(context);
     final dividerColor = brightness == Brightness.dark
-        ? colorScheme.surfaceContainerHighest
-        : colorScheme.surfaceContainer;
+        ? const Color(0xFF222D34)
+        : const Color(0xFFE9EDEF);
     return ThemeData(
       visualDensity: VisualDensity.standard,
       useMaterial3: true,
       brightness: brightness,
+      scaffoldBackgroundColor: brightness == Brightness.dark
+          ? whatsappDarkBackground
+          : whatsappLightBackground,
       colorScheme: colorScheme,
       dividerColor: dividerColor,
       segmentedButtonTheme: SegmentedButtonThemeData(
@@ -86,17 +104,24 @@ abstract class FluffyThemes {
       ),
       appBarTheme: AppBarTheme(
         toolbarHeight: isColumnMode ? 72 : 56,
-        surfaceTintColor: isColumnMode ? colorScheme.surface : null,
-        backgroundColor: isColumnMode ? colorScheme.surface : null,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: brightness == Brightness.dark
+            ? whatsappDarkSurface
+            : whatsappPrimaryGreen,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         actionsPadding: isColumnMode
             ? const EdgeInsets.symmetric(horizontal: 16.0)
             : null,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: brightness.reversed,
-          statusBarBrightness: brightness,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
           systemNavigationBarIconBrightness: brightness.reversed,
-          systemNavigationBarColor: colorScheme.surface,
+          systemNavigationBarColor: brightness == Brightness.dark
+              ? whatsappDarkBackground
+              : Colors.white,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -140,16 +165,18 @@ extension on Brightness {
 
 extension BubbleColorTheme on ThemeData {
   Color get bubbleColor => brightness == Brightness.light
-      ? colorScheme.primary
-      : colorScheme.primaryContainer;
+      ? FluffyThemes.whatsappOutgoingLight
+      : FluffyThemes.whatsappOutgoingDark;
 
   Color get onBubbleColor => brightness == Brightness.light
-      ? colorScheme.onPrimary
-      : colorScheme.onPrimaryContainer;
+      ? const Color(0xFF111B21)
+      : const Color(0xFFE9EDEF);
 
-  Color get secondaryBubbleColor => HSLColor.fromColor(
-    brightness == Brightness.light
-        ? colorScheme.tertiary
-        : colorScheme.tertiaryContainer,
-  ).withSaturation(0.5).toColor();
+  Color get secondaryBubbleColor => brightness == Brightness.light
+      ? FluffyThemes.whatsappIncomingLight
+      : FluffyThemes.whatsappIncomingDark;
+
+  Color get onSecondaryBubbleColor => brightness == Brightness.light
+      ? const Color(0xFF111B21)
+      : const Color(0xFFE9EDEF);
 }
