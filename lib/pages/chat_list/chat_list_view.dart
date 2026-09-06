@@ -9,13 +9,21 @@ import 'package:material_ui/material_ui.dart';
 
 import 'chat_list_body.dart';
 
-class ChatListView extends StatelessWidget {
+class ChatListView extends StatefulWidget {
   final ChatListController controller;
 
   const ChatListView(this.controller, {super.key});
 
   @override
+  State<ChatListView> createState() => _ChatListViewState();
+}
+
+class _ChatListViewState extends State<ChatListView> {
+  int _currentIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
     return PopScope(
       canPop: !controller.isSearchMode && controller.activeSpaceId == null,
       onPopInvokedWithResult: (pop, _) {
@@ -29,77 +37,103 @@ class ChatListView extends StatelessWidget {
           return;
         }
       },
-      child: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'WhatsApp',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: Colors.white,
-              ),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: FluffyThemes.whatsappPrimaryGreen,
+          elevation: 0,
+          title: const Text(
+            'WhatsApp',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              color: Colors.white,
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.white),
-                onPressed: () {
-                  if (!controller.isSearchMode) {
-                    controller.startSearch();
-                  }
-                },
-              ),
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onSelected: (value) {},
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'new_group', child: Text('New group')),
-                  const PopupMenuItem(value: 'settings', child: Text('Settings')),
-                ],
-              ),
-            ],
-            bottom: TabBar(
-              indicatorColor: Colors.white,
-              indicatorWeight: 3,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              tabs: const [
-                Tab(text: 'CHATS'),
-                Tab(text: 'UPDATES'),
-                Tab(text: 'CALLS'),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.white),
+              onPressed: () {
+                if (!controller.isSearchMode) {
+                  controller.startSearch();
+                }
+              },
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (value) {},
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'new_group', child: Text('New group')),
+                const PopupMenuItem(value: 'community', child: Text('New community')),
+                const PopupMenuItem(value: 'settings', child: Text('Settings')),
               ],
             ),
-          ),
-          body: TabBarView(
-            children: [
-              ChatListViewBody(controller),
-              const Center(
-                child: Text(
-                  'No updates available',
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
+          ],
+        ),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            ChatListViewBody(controller),
+            const Center(
+              child: Text(
+                'Updates / Status',
+                style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
-              const Center(
-                child: Text(
-                  'No recent calls',
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
+            ),
+            const Center(
+              child: Text(
+                'Communities',
+                style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: FluffyThemes.whatsappSecondaryGreen,
-            foregroundColor: Colors.white,
-            shape: const CircleBorder(),
-            onPressed: () {},
-            child: const Icon(Icons.message),
-          ),
+            ),
+            const Center(
+              child: Text(
+                'Calls',
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          indicatorColor: FluffyThemes.whatsappSecondaryGreen.withAlpha(50),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.chat_outlined),
+              selectedIcon: Icon(Icons.chat, color: FluffyThemes.whatsappPrimaryGreen),
+              label: 'Chats',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.update_outlined),
+              selectedIcon: Icon(Icons.update, color: FluffyThemes.whatsappPrimaryGreen),
+              label: 'Updates',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.groups_outlined),
+              selectedIcon: Icon(Icons.groups, color: FluffyThemes.whatsappPrimaryGreen),
+              label: 'Communities',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.call_outlined),
+              selectedIcon: Icon(Icons.call, color: FluffyThemes.whatsappPrimaryGreen),
+              label: 'Calls',
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: FluffyThemes.whatsappSecondaryGreen,
+          foregroundColor: Colors.white,
+          shape: const CircleBorder(),
+          onPressed: () {},
+          child: const Icon(Icons.message),
         ),
       ),
     );
