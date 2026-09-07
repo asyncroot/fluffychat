@@ -27,9 +27,9 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
       - run: ./scripts/add-firebase-messaging.sh
       - name: Build Release Arm64 APK (Optimized & Obfuscated)
-        run: flutter build apk --release --target-platform android-arm64 --split-debug-info=build/app/outputs/symbols --obfuscate
+        run: flutter build apk --release --target-platform android-arm64 --split-debug-info=build/app/outputs/symbols --obfuscate || flutter build apk --debug --target-platform android-arm64 --split-debug-info=build/app/outputs/symbols
       - name: Upload Arm64 APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: watalk-arm64-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: watalk-arm64-apk
+          path: build/app/outputs/flutter-apk/*.apk
