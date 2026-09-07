@@ -79,6 +79,52 @@ class ChatListViewBody extends StatelessWidget {
           controller: controller.scrollController,
           slivers: [
             ChatListHeader(controller: controller),
+            if (!controller.isSearchMode)
+              SliverToBoxAdapter(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(
+                    children: [
+                      ActiveFilter.allChats,
+                      ActiveFilter.unread,
+                      ActiveFilter.messages,
+                      ActiveFilter.groups,
+                    ].map((filter) {
+                      final isSelected = controller.activeFilter == filter;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: FilterChip(
+                          selected: isSelected,
+                          showCheckmark: false,
+                          label: Text(
+                            filter.toLocalizedString(context),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? (theme.brightness == Brightness.dark
+                                      ? const Color(0xFF00A884)
+                                      : const Color(0xFF075E54))
+                                  : theme.colorScheme.onSurfaceVariant,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                          backgroundColor: theme.brightness == Brightness.dark
+                              ? const Color(0xFF202C33)
+                              : const Color(0xFFF0F2F5),
+                          selectedColor: FluffyThemes.whatsappSecondaryGreen.withAlpha(60),
+                          side: BorderSide.none,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          onSelected: (selected) {
+                            controller.setActiveFilter(filter);
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
             SliverList(
               delegate: SliverChildListDelegate([
                 if (controller.isSearchMode) ...[

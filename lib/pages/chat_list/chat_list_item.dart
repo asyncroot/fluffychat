@@ -108,6 +108,10 @@ class ChatListItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
+                      style: TextStyle(
+                        fontWeight: room.hasNewMessages ? FontWeight.bold : FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   if (isMuted)
@@ -264,7 +268,9 @@ class ChatListItem extends StatelessWidget {
                                     size: 16,
                                     color: lastEvent?.status.isSending == true
                                         ? theme.colorScheme.outline
-                                        : const Color(0xFF53BDEB),
+                                        : (room.readMarker != null && room.readMarker == lastEvent?.eventId
+                                            ? const Color(0xFF53BDEB)
+                                            : theme.colorScheme.outline),
                                   ),
                                   const SizedBox(width: 4),
                                 ],

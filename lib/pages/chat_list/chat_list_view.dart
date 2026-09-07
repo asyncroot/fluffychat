@@ -5,6 +5,7 @@
 
 import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/pages/chat_list/chat_list.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'chat_list_body.dart';
@@ -38,61 +39,95 @@ class _ChatListViewState extends State<ChatListView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: FluffyThemes.whatsappPrimaryGreen,
-          elevation: 0,
-          title: const Text(
-            'WhatsApp',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Colors.white,
-            ),
+        backgroundColor: FluffyThemes.whatsappPrimaryGreen,
+        elevation: 0,
+        title: Text(
+          controller.isSearchMode ? '' : 'WaTalk',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white,
           ),
+        ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
-              onPressed: () {
-                if (!controller.isSearchMode) {
-                  controller.startSearch();
-                }
-              },
-            ),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (value) {},
-              itemBuilder: (context) => [
-                const PopupMenuItem(value: 'new_group', child: Text('New group')),
-                const PopupMenuItem(value: 'community', child: Text('New community')),
-                const PopupMenuItem(value: 'settings', child: Text('Settings')),
-              ],
-            ),
+            if (!controller.isSearchMode) ...[
+              IconButton(
+                icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.white),
+                onPressed: controller.startSearch,
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onSelected: (value) {
+                  if (value == 'settings') {
+                    context.go('/settings');
+                  } else if (value == 'new_group') {
+                    context.go('/newgroup');
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'new_group',
+                    child: Text(L10n.of(context).newGroup),
+                  ),
+                  PopupMenuItem(
+                    value: 'settings',
+                    child: Text(L10n.of(context).settings),
+                  ),
+                ],
+              ),
+            ] else ...[
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: controller.cancelSearch,
+              ),
+            ],
           ],
         ),
         body: IndexedStack(
           index: _currentIndex,
           children: [
             ChatListViewBody(controller),
-            const Center(
-              child: Text(
-                'Updates / Status',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.update_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
+                  const SizedBox(height: 16),
+                  Text(
+                    L10n.of(context).updates,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
-            const Center(
-              child: Text(
-                'Communities',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.groups_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
+                  const SizedBox(height: 16),
+                  Text(
+                    L10n.of(context).spaces,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
-            const Center(
-              child: Text(
-                'Calls',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.call_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Calls',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
           ],
@@ -104,24 +139,24 @@ class _ChatListViewState extends State<ChatListView> {
               _currentIndex = index;
             });
           },
-          indicatorColor: FluffyThemes.whatsappSecondaryGreen.withAlpha(50),
-          destinations: const [
+          indicatorColor: FluffyThemes.whatsappSecondaryGreen.withAlpha(80),
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.chat_outlined),
-              selectedIcon: Icon(Icons.chat, color: FluffyThemes.whatsappPrimaryGreen),
-              label: 'Chats',
+              icon: const Icon(Icons.chat_outlined),
+              selectedIcon: const Icon(Icons.chat, color: FluffyThemes.whatsappPrimaryGreen),
+              label: L10n.of(context).chats,
             ),
             NavigationDestination(
-              icon: Icon(Icons.update_outlined),
-              selectedIcon: Icon(Icons.update, color: FluffyThemes.whatsappPrimaryGreen),
-              label: 'Updates',
+              icon: const Icon(Icons.update_outlined),
+              selectedIcon: const Icon(Icons.update, color: FluffyThemes.whatsappPrimaryGreen),
+              label: L10n.of(context).updates,
             ),
             NavigationDestination(
-              icon: Icon(Icons.groups_outlined),
-              selectedIcon: Icon(Icons.groups, color: FluffyThemes.whatsappPrimaryGreen),
-              label: 'Communities',
+              icon: const Icon(Icons.groups_outlined),
+              selectedIcon: const Icon(Icons.groups, color: FluffyThemes.whatsappPrimaryGreen),
+              label: L10n.of(context).spaces,
             ),
-            NavigationDestination(
+            const NavigationDestination(
               icon: Icon(Icons.call_outlined),
               selectedIcon: Icon(Icons.call, color: FluffyThemes.whatsappPrimaryGreen),
               label: 'Calls',

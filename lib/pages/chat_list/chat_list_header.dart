@@ -60,16 +60,19 @@ class ChatListHeader extends StatelessWidget implements PreferredSizeWidget {
                 controller.onSearchEnter(text, globalSearch: globalSearch),
             decoration: InputDecoration(
               filled: true,
-              fillColor: theme.colorScheme.secondaryContainer,
+              fillColor: theme.brightness == Brightness.dark
+                  ? const Color(0xFF202C33)
+                  : const Color(0xFFF0F2F5),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               border: OutlineInputBorder(
                 borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: BorderRadius.circular(24),
               ),
               hintText: hide
                   ? L10n.of(context).searchChatsRooms
                   : status.calcLocalizedString(context),
               hintStyle: TextStyle(
-                color: theme.colorScheme.onPrimaryContainer,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.normal,
               ),
 
