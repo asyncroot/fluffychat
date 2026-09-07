@@ -26,10 +26,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
       - run: ./scripts/add-firebase-messaging.sh
-      - name: Build Debug Arm64 APK
-        run: flutter build apk --debug --target-platform android-arm64
+      - name: Build Release Arm64 APK (Optimized & Obfuscated)
+        run: flutter build apk --release --target-platform android-arm64 --split-debug-info=build/app/outputs/symbols --obfuscate
       - name: Upload Arm64 APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fluffychat-whatsapp-arm64-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: watalk-arm64-release
+          path: build/app/outputs/flutter-apk/app-release.apk
