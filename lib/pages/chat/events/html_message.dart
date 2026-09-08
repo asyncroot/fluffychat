@@ -361,12 +361,18 @@ class HtmlMessage extends StatelessWidget {
           return const TextSpan(text: 'Unable to render code block!');
         }
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final codeBg = isInline
+            ? (isDark ? const Color(0xFF2A3942) : const Color(0xFFE9EDEF))
+            : (isDark ? const Color(0xFF1F2C34) : const Color(0xFFF7F8FA));
+        final codeBorder = isDark ? const Color(0xFF3B4A54) : const Color(0xFFD1D7DB);
+
         return WidgetSpan(
           child: Material(
-            color: atomOneBackgroundColor,
+            color: codeBg,
             shape: RoundedRectangleBorder(
-              side: const BorderSide(color: hightlightTextColor),
-              borderRadius: BorderRadius.circular(4),
+              side: BorderSide(color: codeBorder),
+              borderRadius: BorderRadius.circular(isInline ? 4 : 8),
             ),
             child: Padding(
               padding: isInline
