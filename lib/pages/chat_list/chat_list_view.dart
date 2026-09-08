@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import 'package:fluffychat/config/themes.dart';
+import 'package:fluffychat/l10n/l10n.dart';
 import 'package:fluffychat/pages/chat_list/chat_list.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -39,16 +40,17 @@ class _ChatListViewState extends State<ChatListView> {
         }
       },
       child: Scaffold(
-        backgroundColor: FluffyThemes.whatsappPrimaryGreen,
-        elevation: 0,
-        title: Text(
-          controller.isSearchMode ? '' : 'WaTalk',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.white,
+        appBar: AppBar(
+          backgroundColor: FluffyThemes.whatsappPrimaryGreen,
+          elevation: 0,
+          title: Text(
+            controller.isSearchMode ? '' : 'WaTalk',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              color: Colors.white,
+            ),
           ),
-        ),
           actions: [
             if (!controller.isSearchMode) ...[
               IconButton(
@@ -69,9 +71,9 @@ class _ChatListViewState extends State<ChatListView> {
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'new_group',
-                    child: Text(L10n.of(context).newGroup),
+                    child: Text('New group'),
                   ),
                   PopupMenuItem(
                     value: 'settings',
@@ -98,7 +100,7 @@ class _ChatListViewState extends State<ChatListView> {
                   const Icon(Icons.update_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
                   const SizedBox(height: 16),
                   Text(
-                    L10n.of(context).updates,
+                    L10n.of(context).edit,
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -111,7 +113,7 @@ class _ChatListViewState extends State<ChatListView> {
                   const Icon(Icons.groups_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
                   const SizedBox(height: 16),
                   Text(
-                    L10n.of(context).spaces,
+                    L10n.of(context).space,
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -149,12 +151,12 @@ class _ChatListViewState extends State<ChatListView> {
             NavigationDestination(
               icon: const Icon(Icons.update_outlined),
               selectedIcon: const Icon(Icons.update, color: FluffyThemes.whatsappPrimaryGreen),
-              label: L10n.of(context).updates,
+              label: L10n.of(context).edit,
             ),
             NavigationDestination(
               icon: const Icon(Icons.groups_outlined),
               selectedIcon: const Icon(Icons.groups, color: FluffyThemes.whatsappPrimaryGreen),
-              label: L10n.of(context).spaces,
+              label: L10n.of(context).space,
             ),
             const NavigationDestination(
               icon: Icon(Icons.call_outlined),

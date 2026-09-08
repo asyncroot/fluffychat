@@ -268,9 +268,7 @@ class ChatListItem extends StatelessWidget {
                                     size: 16,
                                     color: lastEvent?.status.isSending == true
                                         ? theme.colorScheme.outline
-                                        : (room.readMarker != null && room.readMarker == lastEvent?.eventId
-                                            ? const Color(0xFF53BDEB)
-                                            : theme.colorScheme.outline),
+                                        : const Color(0xFF53BDEB),
                                   ),
                                   const SizedBox(width: 4),
                                 ],

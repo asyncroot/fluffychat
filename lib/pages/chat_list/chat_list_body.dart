@@ -117,7 +117,9 @@ class ChatListViewBody extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           onSelected: (selected) {
-                            controller.setActiveFilter(filter);
+                            if (selected) {
+                              controller.setActiveFilter(filter, null);
+                            }
                           },
                         ),
                       );
