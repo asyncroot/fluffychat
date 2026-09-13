@@ -7,6 +7,7 @@ import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/l10n/l10n.dart';
 import 'package:fluffychat/pages/chat_list/chat_list.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'chat_list_body.dart';
@@ -41,39 +42,63 @@ class _ChatListViewState extends State<ChatListView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: FluffyThemes.whatsappPrimaryGreen,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? FluffyThemes.whatsappDarkSurface
+              : Colors.white,
           elevation: 0,
+          scrolledUnderElevation: 0,
           title: Text(
             controller.isSearchMode ? '' : 'WaTalk',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Colors.white,
+              fontSize: 23,
+              color: Color(0xFF008069),
+              letterSpacing: -0.5,
             ),
           ),
           actions: [
             if (!controller.isSearchMode) ...[
               IconButton(
-                icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.white),
-                onPressed: controller.startSearch,
+                icon: Icon(
+                  Icons.camera_alt_outlined,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : const Color(0xFF1F2C34),
+                ),
+                onPressed: () async {
+                  try {
+                    await ImagePicker().pickImage(source: ImageSource.camera);
+                  } catch (_) {}
+                },
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : const Color(0xFF1F2C34),
+                ),
                 onSelected: (value) {
                   if (value == 'settings') {
-                    context.go('/settings');
+                    context.go('/rooms/settings');
                   } else if (value == 'new_group') {
-                    context.go('/newgroup');
+                    context.go('/rooms/newgroup');
+                  } else if (value == 'spaces') {
+                    context.go('/rooms/createspace');
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'new_group',
-                    child: Text('New group'),
+                    child: Text(L10n.of(context).createGroup),
+                  ),
+                  PopupMenuItem(
+                    value: 'spaces',
+                    child: Text(L10n.of(context).createNewSpace),
+                  ),
+                  PopupMenuItem(
+                    value: 'devices',
+                    child: Text(L10n.of(context).devices),
                   ),
                   PopupMenuItem(
                     value: 'settings',
@@ -83,7 +108,7 @@ class _ChatListViewState extends State<ChatListView> {
               ),
             ] else ...[
               IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
+                icon: const Icon(Icons.close),
                 onPressed: controller.cancelSearch,
               ),
             ],
@@ -100,7 +125,7 @@ class _ChatListViewState extends State<ChatListView> {
                   const Icon(Icons.update_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
                   const SizedBox(height: 16),
                   Text(
-                    L10n.of(context).edit,
+                    L10n.of(context).status,
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -125,8 +150,8 @@ class _ChatListViewState extends State<ChatListView> {
                 children: [
                   const Icon(Icons.call_outlined, size: 64, color: FluffyThemes.whatsappPrimaryGreen),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Calls',
+                  Text(
+                    L10n.of(context).calls,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -151,7 +176,7 @@ class _ChatListViewState extends State<ChatListView> {
             NavigationDestination(
               icon: const Icon(Icons.update_outlined),
               selectedIcon: const Icon(Icons.update, color: FluffyThemes.whatsappPrimaryGreen),
-              label: L10n.of(context).edit,
+              label: L10n.of(context).status,
             ),
             NavigationDestination(
               icon: const Icon(Icons.groups_outlined),
@@ -165,12 +190,34 @@ class _ChatListViewState extends State<ChatListView> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: FluffyThemes.whatsappSecondaryGreen,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          onPressed: () {},
-          child: const Icon(Icons.message),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              margin: const EdgeInsets.only(bottom: 12),
+              child: FloatingActionButton(
+                heroTag: 'ai_fab',
+                elevation: 2,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF202C33)
+                    : const Color(0xFFF0F2F5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                onPressed: () => context.go('/rooms/newprivatechat'),
+                child: const Icon(Icons.auto_awesome, color: Color(0xFF00A884), size: 22),
+              ),
+            ),
+            FloatingActionButton(
+              heroTag: 'chat_fab',
+              backgroundColor: const Color(0xFF25D366),
+              foregroundColor: Colors.white,
+              elevation: 3,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              onPressed: () => context.go('/rooms/newprivatechat'),
+              child: const Icon(Icons.chat, size: 24),
+            ),
+          ],
         ),
       ),
     );
